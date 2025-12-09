@@ -99,7 +99,7 @@ function App() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.4 }}
           >
-            <IngredientForm onSubmit={handleIngredientSubmit} loading={loading} />
+            <IngredientForm/>
             {recipes.length > 0 && <RecipeCards recipes={recipes} />}
           </motion.div>
         )}

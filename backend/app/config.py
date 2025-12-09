@@ -18,12 +18,12 @@ class Settings(BaseSettings):
     
     # Google Gemini API
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-pro"
+    GEMINI_MODEL: str = "gemini-1.5-pro-latest"  # Correct model name
     MAX_TOKENS: int = 4096
     TEMPERATURE: float = 0.7
     
     # CORS Settings
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:3000,https://nutrimind.netlify.app"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://localhost:3002,http://127.0.0.1:5173,http://127.0.0.1:3000,http://127.0.0.1:3002,https://nutrimind.netlify.app"
     
     # Server Settings (optional, for .env file)
     HOST: str = "0.0.0.0"
