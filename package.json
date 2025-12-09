@@ -1,0 +1,29 @@
+{
+  "name": "nutrimind",
+  "version": "1.0.0",
+  "description": "AI-Powered Meal & Recipe Planner",
+  "scripts": {
+    "install:all": "npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && pip install -r requirements.txt",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:backend": "cd backend && python main.py",
+    "build:frontend": "cd frontend && npm run build",
+    "test:frontend": "cd frontend && npm test",
+    "lint:frontend": "cd frontend && npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manaswi2399/NutriMind"
+  },
+  "keywords": [
+    "nutrition",
+    "ai",
+    "meal-planning",
+    "recipes",
+    "health",
+    "claude-ai"
+  ],
+  "author": "Team UIBot",
+  "license": "MIT"
+}
