@@ -24,7 +24,11 @@ export interface Recipe {
 
 function App() {
   const [activeView, setActiveView] = useState<'home' | 'diet' | 'ingredients'>('home');
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  
+  // Separate recipe states for each page
+  const [dietRecipes, setDietRecipes] = useState<Recipe[]>([]);
+  const [ingredientRecipes, setIngredientRecipes] = useState<Recipe[]>([]);
+  
   const [loading, setLoading] = useState(false);
 
   const handleDietSubmit = async (dietData: any) => {
@@ -66,9 +70,6 @@ function App() {
 
       console.log("Sending payload:", payload);
 
-
-      console.log("Sending payload:", payload);
-
       const response = await fetch("http://localhost:8000/api/meal-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -100,7 +101,7 @@ function App() {
         }))
       );
 
-      setRecipes(recipes);
+      setDietRecipes(recipes); // Store in diet-specific state
 
     } catch (error) {
       console.error("Error fetching meal plan:", error);
@@ -108,8 +109,6 @@ function App() {
       setLoading(false);
     }
   };
-
-
 
   const handleIngredientSubmit = async (ingredientData: any) => {
     setLoading(true);
@@ -120,7 +119,7 @@ function App() {
         body: JSON.stringify(ingredientData),
       });
       const data = await response.json();
-      setRecipes(data.recipes || []);
+      setIngredientRecipes(data.recipes || []); // Store in ingredient-specific state
     } catch (error) {
       console.error('Error fetching recipes:', error);
     } finally {
@@ -154,7 +153,7 @@ function App() {
             transition={{ duration: 0.4 }}
           >
             <DietForm onSubmit={handleDietSubmit} loading={loading} />
-            {recipes.length > 0 && <RecipeCards recipes={recipes} />}
+            {dietRecipes.length > 0 && <RecipeCards recipes={dietRecipes} />}
           </motion.div>
         )}
 
@@ -167,11 +166,11 @@ function App() {
             transition={{ duration: 0.4 }}
           >
             <IngredientForm 
-                setRecipes={setRecipes}
+                setRecipes={setIngredientRecipes}
                 loading={loading}
                 setLoading={setLoading}
             />
-            {recipes.length > 0 && <RecipeCards recipes={recipes} />}
+            {ingredientRecipes.length > 0 && <RecipeCards recipes={ingredientRecipes} />}
           </motion.div>
         )}
       </AnimatePresence>
