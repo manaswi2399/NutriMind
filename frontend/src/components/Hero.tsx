@@ -9,6 +9,18 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ setActiveView }) => {
   return (
     <section className="hero">
+      {/* Decorative Background Elements */}
+      <div className="hero-bg-decoration"></div>
+      <div className="hero-bg-pattern"></div>
+      <div className="sparkles">
+        <span className="sparkle sparkle-1">✦</span>
+        <span className="sparkle sparkle-2">✦</span>
+        <span className="sparkle sparkle-3">✦</span>
+        <span className="sparkle sparkle-4">✦</span>
+        <span className="sparkle sparkle-5">✦</span>
+        <span className="sparkle sparkle-6">✦</span>
+      </div>
+
       <div className="hero-content">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -16,8 +28,11 @@ const Hero: React.FC<HeroProps> = ({ setActiveView }) => {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           <h1 className="hero-title">
-            <span className="title-main">NutriMind</span>
-            <span className="title-sub">AI-Powered Nutrition</span>
+            <span className="title-main">
+              <span className="title-accent">Nutri</span>
+              <span className="title-white">Mind</span>
+            </span>
+            <span className="title-sub">AI-POWERED NUTRITION</span>
           </h1>
         </motion.div>
 
@@ -37,10 +52,11 @@ const Hero: React.FC<HeroProps> = ({ setActiveView }) => {
           transition={{ duration: 0.8, delay: 0.6 }}
         >
           <button
-            className="btn btn-primary btn-large"
+            className="btn btn-primary btn-large btn-primary-enhanced"
             onClick={() => setActiveView('diet')}
           >
-            Plan Your Meals
+            <span>Plan Your Meals</span>
+            <span className="btn-icon">→</span>
           </button>
           <button
             className="btn btn-secondary btn-large"
@@ -58,15 +74,15 @@ const Hero: React.FC<HeroProps> = ({ setActiveView }) => {
         >
           <div className="stat">
             <div className="stat-number">1000+</div>
-            <div className="stat-label">Recipes</div>
+            <div className="stat-label">RECIPES</div>
           </div>
           <div className="stat">
             <div className="stat-number">50+</div>
-            <div className="stat-label">Diet Types</div>
+            <div className="stat-label">DIET TYPES</div>
           </div>
           <div className="stat">
             <div className="stat-number">AI</div>
-            <div className="stat-label">Powered</div>
+            <div className="stat-label">POWERED</div>
           </div>
         </motion.div>
       </div>
@@ -77,22 +93,68 @@ const Hero: React.FC<HeroProps> = ({ setActiveView }) => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 0.3 }}
       >
-        <div className="floating-card card-1">
-          <div className="card-icon">🥗</div>
-          <div className="card-text">Healthy Salads</div>
-        </div>
-        <div className="floating-card card-2">
-          <div className="card-icon">🍳</div>
-          <div className="card-text">Breakfast Ideas</div>
-        </div>
-        <div className="floating-card card-3">
-          <div className="card-icon">🥙</div>
-          <div className="card-text">Balanced Meals</div>
-        </div>
-        <div className="floating-card card-4">
-          <div className="card-icon">🍜</div>
-          <div className="card-text">Global Cuisine</div>
-        </div>
+        {/* Card 1 - Top Left - Healthy Salads */}
+        <motion.div 
+          className="floating-card card-1"
+          whileHover={{ scale: 1.05, rotate: 0 }}
+        >
+          <div className="card-image-container salad-image">
+            <img 
+              src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=400&fit=crop" 
+              alt="Healthy Salad"
+              className="card-img"
+            />
+          </div>
+          <div className="card-label">Healthy Salads</div>
+        </motion.div>
+        
+        {/* Card 2 - Top Right - Breakfast Ideas */}
+        <motion.div 
+          className="floating-card card-2"
+          whileHover={{ scale: 1.05, rotate: 0 }}
+        >
+          <div className="card-image-container breakfast-image">
+            <img 
+              src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400&h=400&fit=crop" 
+              alt="Breakfast"
+              className="card-img"
+            />
+          </div>
+          <div className="card-label">Breakfast Ideas</div>
+        </motion.div>
+        
+       
+      
+        
+        {/* Card 4 - Middle Right - Balanced Meals (duplicate with different image) */}
+        <motion.div 
+          className="floating-card card-4"
+          whileHover={{ scale: 1.05, rotate: 0 }}
+        >
+          <div className="card-image-container bowl-image">
+            <img 
+              src="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&h=400&fit=crop" 
+              alt="Buddha Bowl"
+              className="card-img"
+            />
+          </div>
+          <div className="card-label">Balanced Meals</div>
+        </motion.div>
+        
+        {/* Card 5 - Bottom Right - Global Cuisine */}
+        <motion.div 
+          className="floating-card card-5"
+          whileHover={{ scale: 1.05, rotate: 0 }}
+        >
+          <div className="card-image-container cuisine-image">
+            <img 
+              src="https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=400&fit=crop" 
+              alt="Global Cuisine"
+              className="card-img"
+            />
+          </div>
+          <div className="card-label">Global Cuisine</div>
+        </motion.div>
       </motion.div>
     </section>
   );
