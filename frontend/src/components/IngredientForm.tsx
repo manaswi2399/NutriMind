@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { searchRecipes } from '../api';
 import './IngredientForm.css';
 
 interface Recipe {
@@ -29,17 +28,25 @@ interface Recipe {
   image_url?: string;
 }
 
-const IngredientForm: React.FC = () => {
+interface IngredientFormProps {
+  setRecipes: (recipes: Recipe[]) => void;
+  loading: boolean;
+  setLoading: (v: boolean) => void;
+}
+
+const IngredientForm: React.FC<IngredientFormProps> = ({
+  setRecipes,
+  loading,
+  setLoading
+}) => {
   const [ingredients, setIngredients] = useState('');
   const [cuisine, setCuisine] = useState('any');
   const [difficulty, setDifficulty] = useState('medium');
-  const [loading, setLoading] = useState(false);
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!ingredients.trim()) {
       setError('Please enter at least one ingredient');
       return;
@@ -52,23 +59,46 @@ const IngredientForm: React.FC = () => {
     try {
       const ingredientList = ingredients
         .split(',')
-        .map(i => i.trim())
-        .filter(i => i.length > 0);
+        .map((i) => i.trim())
+        .filter((i) => i.length > 0);
 
-      const response = await searchRecipes({
+      const payload = {
         ingredients: ingredientList,
+        dietary_restrictions: [],
+        meal_type: null,
         cuisine: cuisine === 'any' ? null : cuisine,
+        cooking_time: null,
         servings: 4
+      };
+
+      console.log("Sending recipe search payload:", payload);
+
+      const response = await fetch("http://localhost:8000/api/recipes/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      setRecipes(response.recipes);
-      
-      if (response.recipes.length === 0) {
-        setError('No recipes found. Try different ingredients!');
+      if (!response.ok) {
+        const err = await response.json();
+        console.error("Search API error:", err);
+        setError("Failed to search recipes");
+        return;
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to search recipes');
-      console.error('Search error:', err);
+
+      const data = await response.json();
+      console.log("Recipe search response:", data);
+
+      const recipesArray = data.recipes || data || [];
+      setRecipes(recipesArray);
+
+      if (recipesArray.length === 0) {
+        setError("No recipes found. Try different ingredients!");
+      }
+
+    } catch (err) {
+      console.error("Search error:", err);
+      setError("Failed to search recipes");
     } finally {
       setLoading(false);
     }
@@ -98,7 +128,7 @@ const IngredientForm: React.FC = () => {
                   value={ingredients}
                   onChange={(e) => setIngredients(e.target.value)}
                   className="form-textarea ingredient-textarea"
-                  placeholder="Enter ingredients separated by commas (e.g., chicken, rice, tomatoes, onions)"
+                  placeholder="Enter ingredients separated by commas (e.g., rice, tomato, egg)"
                   required
                 />
                 <div className="input-hint">
@@ -159,96 +189,19 @@ const IngredientForm: React.FC = () => {
               </button>
 
               {error && (
-                <div className="error-message">
-                  {error}
-                </div>
+                <div className="error-message">{error}</div>
               )}
             </form>
           </motion.div>
         </div>
       </section>
 
-      {/* Results Section */}
+      {/* Loading Section */}
       {loading && (
         <section className="results-section">
           <div className="loading-container">
             <div className="spinner-large"></div>
             <p>Finding delicious recipes...</p>
-          </div>
-        </section>
-      )}
-
-      {!loading && recipes.length > 0 && (
-        <section className="results-section">
-          <div className="results-header">
-            <h2>Found {recipes.length} Recipe{recipes.length !== 1 ? 's' : ''}</h2>
-          </div>
-          
-          <div className="recipe-grid">
-            {recipes.map((recipe) => (
-              <motion.div
-                key={recipe.id}
-                className="recipe-card"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="recipe-header">
-                  <h3>{recipe.name}</h3>
-                  <span className={`difficulty-badge ${recipe.difficulty}`}>
-                    {recipe.difficulty}
-                  </span>
-                </div>
-
-                <p className="recipe-description">{recipe.description}</p>
-
-                <div className="recipe-meta">
-                  <div className="meta-item">
-                    <span className="icon">⏱️</span>
-                    <span>{recipe.total_time} min</span>
-                  </div>
-                  <div className="meta-item">
-                    <span className="icon">🔥</span>
-                    <span>{recipe.nutrition.calories} cal</span>
-                  </div>
-                  <div className="meta-item">
-                    <span className="icon">👥</span>
-                    <span>{recipe.servings} servings</span>
-                  </div>
-                </div>
-
-                <div className="recipe-ingredients">
-                  <strong>Ingredients:</strong>
-                  <ul>
-                    {recipe.ingredients.slice(0, 5).map((ing, idx) => (
-                      <li key={idx}>{ing}</li>
-                    ))}
-                    {recipe.ingredients.length > 5 && (
-                      <li className="more-items">
-                        + {recipe.ingredients.length - 5} more...
-                      </li>
-                    )}
-                  </ul>
-                </div>
-
-                <div className="recipe-nutrition">
-                  <strong>Nutrition (per serving):</strong>
-                  <div className="nutrition-stats">
-                    <span>Protein: {recipe.nutrition.protein}g</span>
-                    <span>Carbs: {recipe.nutrition.carbohydrates}g</span>
-                    <span>Fat: {recipe.nutrition.fat}g</span>
-                  </div>
-                </div>
-
-                {recipe.tags.length > 0 && (
-                  <div className="recipe-tags">
-                    {recipe.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className="tag">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-            ))}
           </div>
         </section>
       )}

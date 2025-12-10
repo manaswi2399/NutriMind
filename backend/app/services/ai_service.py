@@ -1,25 +1,64 @@
 """
-AI Service for Gemini API integration
-Handles all interactions with Google Gemini AI
+AI Service for Fetch AI ASI-1 Mini (REST API version)
 """
 
-import google.generativeai as genai
 import logging
 import json
+import requests
+import asyncio
 from typing import List, Dict, Optional
 from app.config import settings
+import re
 
 logger = logging.getLogger(__name__)
 
+
 class AIService:
-    """Service for interacting with Google Gemini AI"""
-    
+    """Service for interacting with Fetch AI ASI models (REST API)"""
+
     def __init__(self):
-        """Initialize Gemini client"""
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(settings.GEMINI_MODEL)
+        self.api_key = settings.FETCH_API_KEY
+        self.model = settings.ASI_MODEL  # "asi1-mini"
+        self.base_url = "https://api.asi1.ai/v1/chat/completions"
+        self.headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
         self.temperature = settings.TEMPERATURE
-    
+
+    async def _generate(self, prompt: str, temperature: float = None) -> str:
+        """Wrapper for Fetch.ai REST chat completion"""
+
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": temperature if temperature else self.temperature,
+            "max_tokens": settings.MAX_TOKENS
+        }
+
+        # Run blocking requests.post in async thread
+        try:
+            response = await asyncio.to_thread(
+                requests.post,
+                self.base_url,
+                headers=self.headers,
+                json=payload
+            )
+
+            data = response.json()
+
+            return data["choices"][0]["message"]["content"]
+
+        except Exception as e:
+            logger.error(f"Fetch.ai API error: {str(e)}")
+            raise
+
+    # ---------------------------------------------------------
+    # --------- MAIN FEATURE METHODS (meal-plan, recipes, chat)
+    # ---------------------------------------------------------
+
     async def generate_meal_plan(
         self,
         dietary_restrictions: List[str],
@@ -29,9 +68,7 @@ class AIService:
         allergies: List[str],
         preferences: Optional[str]
     ) -> Dict:
-        """Generate a personalized meal plan using Gemini AI"""
-        
-        # Construct the prompt
+
         prompt = self._build_meal_plan_prompt(
             dietary_restrictions,
             calorie_target,
@@ -40,28 +77,10 @@ class AIService:
             allergies,
             preferences
         )
-        
-        try:
-            # Call Gemini API
-            response = self.model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=self.temperature,
-                    max_output_tokens=settings.MAX_TOKENS,
-                )
-            )
-            
-            # Parse response
-            response_text = response.text
-            meal_plan = self._parse_meal_plan_response(response_text)
-            
-            logger.info(f"Successfully generated meal plan for {days} days")
-            return meal_plan
-            
-        except Exception as e:
-            logger.error(f"Error generating meal plan: {str(e)}")
-            raise
-    
+
+        response_text = await self._generate(prompt)
+        return self._parse_meal_plan_response(response_text)
+
     async def find_recipes(
         self,
         ingredients: List[str],
@@ -71,9 +90,7 @@ class AIService:
         cooking_time: Optional[int],
         servings: int
     ) -> List[Dict]:
-        """Find recipes based on available ingredients"""
-        
-        # Construct the prompt
+
         prompt = self._build_recipe_search_prompt(
             ingredients,
             dietary_restrictions,
@@ -82,320 +99,282 @@ class AIService:
             cooking_time,
             servings
         )
-        
-        try:
-            # Call Gemini API
-            response = self.model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=self.temperature,
-                    max_output_tokens=settings.MAX_TOKENS,
-                )
-            )
-            
-            # Parse response
-            response_text = response.text
-            recipes = self._parse_recipe_response(response_text)
-            
-            logger.info(f"Successfully found {len(recipes)} recipes")
-            return recipes
-            
-        except Exception as e:
-            logger.error(f"Error finding recipes: {str(e)}")
-            raise
-    
+
+        response_text = await self._generate(prompt)
+        return self._parse_recipe_response(response_text)
+
     async def chat(
         self,
         message: str,
         context: Optional[List[Dict]] = None
     ) -> Dict:
-        """Handle conversational chat about nutrition and recipes"""
-        
-        # Build conversation history
-        conversation_text = ""
+
+        # Build conversation
+        messages = [{"role": "system", "content": """
+You are NutriMind, a helpful AI nutritionist and recipe expert.
+Provide meal planning advice, recipes, and nutrition guidance.
+""" }]
+
         if context:
-            for msg in context:
-                role = msg.get("role", "user")
-                content = msg.get("content", "")
-                conversation_text += f"{role}: {content}\n"
-        
-        conversation_text += f"user: {message}"
-        
-        system_instruction = """You are NutriMind, a helpful AI nutritionist and recipe expert. 
-Provide personalized meal planning advice, recipe suggestions, and nutritional guidance. 
-Be friendly, encouraging, and focus on healthy, sustainable eating habits."""
-        
-        full_prompt = f"{system_instruction}\n\n{conversation_text}\n\nassistant:"
-        
-        try:
-            # Call Gemini API
-            response = self.model.generate_content(
-                full_prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.7,
-                    max_output_tokens=2048,
-                )
-            )
-            
-            response_text = response.text
-            
-            logger.info("Successfully processed chat message")
-            return {
-                "message": response_text,
-                "suggestions": self._extract_suggestions(response_text)
-            }
-            
-        except Exception as e:
-            logger.error(f"Error in chat: {str(e)}")
-            raise
-    
+            messages.extend(context)
+
+        messages.append({"role": "user", "content": message})
+
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": 0.7,
+            "max_tokens": settings.MAX_TOKENS
+        }
+
+        response = await asyncio.to_thread(
+            requests.post,
+            self.base_url,
+            headers=self.headers,
+            json=payload
+        )
+
+        data = response.json()
+        response_text = data["choices"][0]["message"]["content"]
+
+        return {
+            "message": response_text,
+            "suggestions": self._extract_suggestions(response_text)
+        }
+
     async def analyze_nutrition(
         self,
         recipe_name: str,
         ingredients: List[str],
         servings: int
     ) -> Dict:
-        """Analyze nutritional content of a recipe"""
-        
-        prompt = f"""Analyze the nutritional content of this recipe and provide detailed information.
+
+        prompt = f"""Analyze the nutritional content of this recipe and return JSON only.
 
 Recipe: {recipe_name}
 Servings: {servings}
+
 Ingredients:
-{chr(10).join(f"- {ing}" for ing in ingredients)}
+{chr(10).join(f"- {i}" for i in ingredients)}
 
-Please provide:
-1. Nutritional information per serving (calories, protein, carbs, fat, fiber, sugar, sodium)
-2. Total nutritional information for all servings
-3. Health score (0-100) based on nutritional balance
-4. Health recommendations and tips
-
-Return your response in JSON format with the following structure:
+Required JSON Format:
 {{
-    "nutrition_per_serving": {{
-        "calories": <int>,
-        "protein": <float>,
-        "carbohydrates": <float>,
-        "fat": <float>,
-        "fiber": <float>,
-        "sugar": <float>,
-        "sodium": <float>
-    }},
-    "health_score": <int 0-100>,
-    "recommendations": [<list of strings>]
-}}"""
-        
-        try:
-            response = self.model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.3,
-                    max_output_tokens=2048,
-                )
-            )
-            
-            response_text = response.text
-            
-            # Extract JSON from response
-            json_start = response_text.find('{')
-            json_end = response_text.rfind('}') + 1
-            if json_start != -1 and json_end > json_start:
-                json_str = response_text[json_start:json_end]
-                analysis = json.loads(json_str)
-            else:
-                raise ValueError("Could not parse JSON from response")
-            
-            logger.info(f"Successfully analyzed nutrition for {recipe_name}")
-            return analysis
-            
-        except Exception as e:
-            logger.error(f"Error analyzing nutrition: {str(e)}")
-            raise
-    
+  "nutrition_per_serving": {{
+    "calories": <int>,
+    "protein": <float>,
+    "carbohydrates": <float>,
+    "fat": <float>,
+    "fiber": <float>,
+    "sugar": <float>,
+    "sodium": <float>
+  }},
+  "health_score": <int>,
+  "recommendations": [<strings>]
+}}
+"""
+
+        response_text = await self._generate(prompt, temperature=0.3)
+
+        json_start = response_text.find("{")
+        json_end = response_text.rfind("}") + 1
+
+        if json_start == -1 or json_end <= json_start:
+            raise ValueError("Could not parse nutrition JSON")
+
+        return json.loads(response_text[json_start:json_end])
+
+    # ---------------------------------------------------------
+    # ------------- PROMPT BUILDERS (unchanged)
+    # ---------------------------------------------------------
+
     def _build_meal_plan_prompt(
         self,
-        dietary_restrictions: List[str],
-        calorie_target: Optional[int],
-        meals_per_day: int,
-        days: int,
-        allergies: List[str],
-        preferences: Optional[str]
+        dietary_restrictions,
+        calorie_target,
+        meals_per_day,
+        days,
+        allergies,
+        preferences
     ) -> str:
-        """Build prompt for meal plan generation"""
-        
-        prompt = f"""Create a detailed {days}-day meal plan with {meals_per_day} meals per day.
 
-Requirements:
-"""
-        
-        if dietary_restrictions:
-            prompt += f"- Dietary restrictions: {', '.join(dietary_restrictions)}\n"
-        
-        if calorie_target:
-            prompt += f"- Target calories per day: {calorie_target}\n"
-        
-        if allergies:
-            prompt += f"- Allergies to avoid: {', '.join(allergies)}\n"
-        
-        if preferences:
-            prompt += f"- Additional preferences: {preferences}\n"
-        
-        prompt += """
-For each meal, provide:
-1. Meal name
-2. Brief description
-3. Complete ingredient list with quantities
-4. Step-by-step cooking instructions
-5. Prep time, cook time, and total time
-6. Servings
-7. Difficulty level (easy/medium/hard)
-8. Nutritional information (calories, protein, carbs, fat, fiber)
-9. Cuisine type and meal tags
+        prompt = f"""
+    You are NutriMind, an expert meal-planning AI.
 
-Return the response in JSON format with the following structure:
-{
+    Your ONLY task is to output **valid JSON**, with no explanations, no markdown, no text outside JSON.
+
+    If you cannot satisfy a field, use a reasonable placeholder.
+
+    STRICT RULES:
+    - Respond with JSON ONLY
+    - Do NOT include extra text
+    - Do NOT include ```json``` or any formatting wrapper
+    - Output must strictly follow this schema:
+
+    {{
     "days": [
-        {
-            "day": 1,
-            "meals": [
-                {
-                    "meal_type": "breakfast",
-                    "recipe": {
-                        "name": "...",
-                        "description": "...",
-                        "ingredients": ["..."],
-                        "instructions": ["..."],
-                        "prep_time": 10,
-                        "cook_time": 15,
-                        "servings": 2,
-                        "difficulty": "easy",
-                        "cuisine": "...",
-                        "nutrition": {
-                            "calories": 350,
-                            "protein": 15,
-                            "carbohydrates": 45,
-                            "fat": 12,
-                            "fiber": 6
-                        },
-                        "tags": ["healthy", "quick"]
-                    }
-                }
-            ]
-        }
+        {{
+        "day": 1,
+        "meals": [
+            {{
+            "meal_type": "breakfast",
+            "recipe": {{
+                "name": "string",
+                "description": "string",
+                "ingredients": ["string", ...],
+                "instructions": ["string", ...],
+                "prep_time": 0,
+                "cook_time": 0,
+                "nutrition": {{
+                "calories": 0,
+                "protein": 0,
+                "carbohydrates": 0,
+                "fat": 0,
+                "fiber": 0,
+                "sugar": 0,
+                "sodium": 0
+                }}
+            }}
+            }}
+        ]
+        }}
     ]
-}
+    }}
 
-Make the recipes delicious, balanced, and varied across days."""
-        
+    USER INPUT:
+    - Dietary restrictions: {', '.join(dietary_restrictions) or "None"}
+    - Calorie target: {calorie_target or "None"}
+    - Meals per day: {meals_per_day}
+    - Days: {days}
+    - Allergies: {', '.join(allergies) or "None"}
+    - Preferences: {preferences or "None"}
+
+    Return JSON ONLY.
+    """
+
         return prompt
-    
+
+
     def _build_recipe_search_prompt(
         self,
-        ingredients: List[str],
-        dietary_restrictions: List[str],
-        meal_type: Optional[str],
-        cuisine: Optional[str],
-        cooking_time: Optional[int],
-        servings: int
+        ingredients,
+        dietary_restrictions,
+        meal_type,
+        cuisine,
+        cooking_time,
+        servings
     ) -> str:
-        """Build prompt for recipe search"""
-        
-        prompt = f"""Find 3-5 delicious recipes that can be made with these ingredients:
-{', '.join(ingredients)}
 
-Requirements:
-- Servings: {servings}
-"""
-        
-        if dietary_restrictions:
-            prompt += f"- Dietary restrictions: {', '.join(dietary_restrictions)}\n"
-        
-        if meal_type:
-            prompt += f"- Meal type: {meal_type}\n"
-        
-        if cuisine:
-            prompt += f"- Preferred cuisine: {cuisine}\n"
-        
-        if cooking_time:
-            prompt += f"- Maximum cooking time: {cooking_time} minutes\n"
-        
-        prompt += """
-For each recipe, provide:
-1. Recipe name
-2. Brief description
-3. Complete ingredient list with quantities
-4. Step-by-step instructions
-5. Prep time, cook time, and total time
-6. Difficulty level
-7. Nutritional information
-8. Tags and cuisine type
+        prompt = f"""
+    Find 3–5 recipes using these ingredients: {', '.join(ingredients)}
 
-Return the response in JSON format as an array of recipes with the same structure as in the meal plan example.
-Focus on recipes that maximize the use of the provided ingredients."""
-        
+    Restrictions: {', '.join(dietary_restrictions) if dietary_restrictions else "None"}
+    Meal type: {meal_type or "Any"}
+    Cuisine: {cuisine or "Any"}
+    Max cooking time: {cooking_time or "Any"} minutes
+    Servings: {servings}
+
+    ⚠️ VERY IMPORTANT RULES:
+    - Return **JSON ONLY**, no explanations, no text outside JSON.
+    - Nutrition values MUST be **pure numbers** (no units, no 'g', no 'mg').
+    - Example: "protein": 18 not "18g".
+    - Example: "sodium": 480 not "480mg".
+
+    OUTPUT FORMAT:
+    [
+    {{
+        "name": "...",
+        "description": "...",
+        "ingredients": ["..."],
+        "instructions": ["..."],
+        "prep_time": 0,
+        "cook_time": 0,
+        "total_time": 0,
+        "servings": {servings},
+        "difficulty": "easy",
+        "cuisine": "{cuisine or ''}",
+        "meal_type": "{meal_type or ''}",
+        "nutrition": {{
+        "calories": 0,
+        "protein": 0,
+        "carbohydrates": 0,
+        "fat": 0,
+        "fiber": 0,
+        "sugar": 0,
+        "sodium": 0
+        }},
+        "tags": [],
+        "image_url": null
+    }}
+    ]
+    """
+
         return prompt
-    
-    def _parse_meal_plan_response(self, response_text: str) -> Dict:
-        """Parse Claude's meal plan response"""
-        try:
-            # Extract JSON from response
-            json_start = response_text.find('{')
-            json_end = response_text.rfind('}') + 1
-            
-            if json_start != -1 and json_end > json_start:
-                json_str = response_text[json_start:json_end]
-                meal_plan = json.loads(json_str)
-                return meal_plan
-            else:
-                raise ValueError("Could not find JSON in response")
-                
-        except json.JSONDecodeError as e:
-            logger.error(f"Error parsing JSON: {str(e)}")
-            raise ValueError(f"Invalid JSON response: {str(e)}")
-    
-    def _parse_recipe_response(self, response_text: str) -> List[Dict]:
-        """Parse Claude's recipe search response"""
-        try:
-            # Extract JSON from response
-            json_start = response_text.find('[')
-            if json_start == -1:
-                json_start = response_text.find('{')
-            
-            json_end = response_text.rfind(']') + 1
-            if json_end == 0:
-                json_end = response_text.rfind('}') + 1
-            
-            if json_start != -1 and json_end > json_start:
-                json_str = response_text[json_start:json_end]
-                recipes = json.loads(json_str)
-                
-                # Ensure it's a list
-                if isinstance(recipes, dict):
-                    recipes = [recipes]
-                
-                return recipes
-            else:
-                raise ValueError("Could not find JSON in response")
-                
-        except json.JSONDecodeError as e:
-            logger.error(f"Error parsing JSON: {str(e)}")
-            raise ValueError(f"Invalid JSON response: {str(e)}")
-    
-    def _extract_suggestions(self, response_text: str) -> List[str]:
-        """Extract follow-up suggestions from response"""
-        # Simple heuristic to extract suggestions
-        suggestions = []
-        
-        if "you could" in response_text.lower():
-            suggestions.append("Tell me more about healthy alternatives")
-        
-        if "recipe" in response_text.lower():
-            suggestions.append("Show me similar recipes")
-        
-        if "calorie" in response_text.lower() or "nutrition" in response_text.lower():
-            suggestions.append("Analyze the nutritional content")
-        
-        return suggestions[:3]  # Return max 3 suggestions
 
-# Create singleton instance
+
+
+    # ---------------------------------------------------------
+    # ---------------- RESPONSE PARSERS
+    # ---------------------------------------------------------
+
+    def _parse_meal_plan_response(self, response_text: str) -> Dict:
+        try:
+            # Find first { 
+            start = response_text.find("{")
+            if start == -1:
+                raise ValueError("No JSON object found")
+
+            brace_count = 0
+            end = start
+
+            # Walk through the text counting { and }
+            for i, ch in enumerate(response_text[start:], start=start):
+                if ch == "{":
+                    brace_count += 1
+                elif ch == "}":
+                    brace_count -= 1
+                    if brace_count == 0:
+                        end = i + 1
+                        break
+
+            if brace_count != 0:
+                raise ValueError("JSON braces did not balance")
+
+            json_text = response_text[start:end]
+            return json.loads(json_text)
+
+        except Exception as e:
+            logger.error("Meal plan parsing failure. Raw response BELOW:")
+            logger.error(response_text)
+            raise ValueError("Meal plan JSON parsing failed.")
+
+
+
+    def _parse_recipe_response(self, response_text: str) -> List[Dict]:
+        try:
+            json_start = response_text.find("[")
+            if json_start == -1:
+                json_start = response_text.find("{")
+            json_end = response_text.rfind("]") + 1
+            if json_end == 0:
+                json_end = response_text.rfind("}") + 1
+
+            data = json.loads(response_text[json_start:json_end])
+            return data if isinstance(data, list) else [data]
+
+        except Exception:
+            raise ValueError("Recipe JSON parsing failed.")
+
+    def _extract_suggestions(self, response_text: str) -> List[str]:
+        text = response_text.lower()
+        suggestions = []
+        if "recipe" in text:
+            suggestions.append("Show me similar recipes")
+        if "nutrition" in text:
+            suggestions.append("Analyze nutritional content")
+        if "you could" in text:
+            suggestions.append("Tell me healthy alternatives")
+        return suggestions[:3]
+
+
+# Singleton instance
 ai_service = AIService()

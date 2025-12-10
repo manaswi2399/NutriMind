@@ -30,24 +30,91 @@ function App() {
   const handleDietSubmit = async (dietData: any) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/meal-plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dietData),
+      // 1️⃣  Convert dietType UI field to enum value
+      const dietEnumMap: Record<string, string> = {
+        "balanced": "",
+        "low-carb": "low_carb",
+        "high-protein": "high_protein",
+        "vegetarian": "vegetarian",
+        "vegan": "vegan",
+        "keto": "keto",
+        "paleo": "paleo",
+        "mediterranean": "" // backend does NOT have this enum
+      };
+
+      const mappedDietRestriction = dietEnumMap[dietData.dietType]
+        ? [dietEnumMap[dietData.dietType]]
+        : [];
+
+      // 2️⃣  Convert restrictions (like "no nuts") to allergies[]:
+      const allergies = dietData.restrictions
+        ? dietData.restrictions
+            .split(",")
+            .map((r: string) => r.trim().toLowerCase())
+            .filter(Boolean)
+        : [];
+
+      // 3️⃣ Build backend-safe payload
+      const payload = {
+        dietary_restrictions: mappedDietRestriction,  
+        calorie_target: Number(dietData.calories),
+        meals_per_day: Number(dietData.meals),
+        days: 5,
+        allergies: allergies,
+        preferences: dietData.protein // optional
+      };
+
+      console.log("Sending payload:", payload);
+
+
+      console.log("Sending payload:", payload);
+
+      const response = await fetch("http://localhost:8000/api/meal-plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error("API Error:", error);
+        alert("Meal plan request failed. See console.");
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
-      setRecipes(data.meals || []);
+      console.log("API response:", data);
+
+      const recipes = data.plan.flatMap((day: any) =>
+        day.meals.map((m: any) => ({
+          id: m.recipe.id,
+          name: m.recipe.name,
+          description: m.recipe.description,
+          calories: m.recipe.nutrition.calories,
+          protein: m.recipe.nutrition.protein,
+          carbs: m.recipe.nutrition.carbohydrates,
+          fat: m.recipe.nutrition.fat,
+          ingredients: m.recipe.ingredients,
+          instructions: m.recipe.instructions,
+        }))
+      );
+
+      setRecipes(recipes);
+
     } catch (error) {
-      console.error('Error fetching meal plan:', error);
+      console.error("Error fetching meal plan:", error);
     } finally {
       setLoading(false);
     }
   };
 
+
+
   const handleIngredientSubmit = async (ingredientData: any) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/recipes', {
+      const response = await fetch('http://localhost:8000/api/recipes/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ingredientData),
@@ -99,7 +166,11 @@ function App() {
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.4 }}
           >
-            <IngredientForm/>
+            <IngredientForm 
+                setRecipes={setRecipes}
+                loading={loading}
+                setLoading={setLoading}
+            />
             {recipes.length > 0 && <RecipeCards recipes={recipes} />}
           </motion.div>
         )}
