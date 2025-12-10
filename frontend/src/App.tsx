@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
 import Hero from './components/Hero';
@@ -6,6 +6,7 @@ import DietForm from './components/DietForm';
 import IngredientForm from './components/IngredientForm';
 import RecipeCards from './components/RecipeCards';
 import Navigation from './components/Navigation';
+import FavoritesPage from './components/FavoritesPage';
 
 export interface Recipe {
   id: string;
@@ -23,13 +24,43 @@ export interface Recipe {
 }
 
 function App() {
-  const [activeView, setActiveView] = useState<'home' | 'diet' | 'ingredients'>('home');
+  const [activeView, setActiveView] = useState<'home' | 'diet' | 'ingredients' | 'favorites'>('home');
   
-  // Separate recipe states for each page
+  // Separate recipe states for each page (from your App.tsx)
   const [dietRecipes, setDietRecipes] = useState<Recipe[]>([]);
   const [ingredientRecipes, setIngredientRecipes] = useState<Recipe[]>([]);
   
   const [loading, setLoading] = useState(false);
+  
+  // Favorites functionality (from App_fav.tsx)
+  const [favorites, setFavorites] = useState<Recipe[]>([]);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("favorites");
+    if (saved) {
+      setFavorites(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save favorites to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
+
+  // Toggle favorite status
+  const toggleFavorite = (recipe: Recipe) => {
+    const exists = favorites.some((fav) => fav.id === recipe.id);
+
+    if (exists) {
+      // Remove from favorites
+      setFavorites(favorites.filter((fav) => fav.id !== recipe.id));
+    } else {
+      // Add to favorites
+      setFavorites([...favorites, recipe]);
+    }
+  };
 
   const handleDietSubmit = async (dietData: any) => {
     setLoading(true);
@@ -153,7 +184,14 @@ function App() {
             transition={{ duration: 0.4 }}
           >
             <DietForm onSubmit={handleDietSubmit} loading={loading} />
-            {dietRecipes.length > 0 && <RecipeCards recipes={dietRecipes} />}
+            {dietRecipes.length > 0 && (
+              <RecipeCards 
+                recipes={dietRecipes}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                onSelectRecipe={setSelectedRecipe}
+              />
+            )}
           </motion.div>
         )}
 
@@ -166,11 +204,34 @@ function App() {
             transition={{ duration: 0.4 }}
           >
             <IngredientForm 
-                setRecipes={setIngredientRecipes}
-                loading={loading}
-                setLoading={setLoading}
+              setRecipes={setIngredientRecipes}
+              loading={loading}
+              setLoading={setLoading}
             />
-            {ingredientRecipes.length > 0 && <RecipeCards recipes={ingredientRecipes} />}
+            {ingredientRecipes.length > 0 && (
+              <RecipeCards 
+                recipes={ingredientRecipes}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                onSelectRecipe={setSelectedRecipe}
+              />
+            )}
+          </motion.div>
+        )}
+
+        {activeView === 'favorites' && (
+          <motion.div
+            key="favorites"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.4 }}
+          >
+            <FavoritesPage 
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
+              onSelectRecipe={setSelectedRecipe}
+            />
           </motion.div>
         )}
       </AnimatePresence>

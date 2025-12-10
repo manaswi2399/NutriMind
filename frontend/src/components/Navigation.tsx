@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import './Navigation.css';
 
 interface NavigationProps {
-  activeView: 'home' | 'diet' | 'ingredients';
-  setActiveView: (view: 'home' | 'diet' | 'ingredients') => void;
+  activeView: 'home' | 'diet' | 'ingredients'| 'favorites';
+  setActiveView: (view: 'home' | 'diet' | 'ingredients'| 'favorites') => void;
 }
 
 const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView }) => {
@@ -50,6 +50,14 @@ const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView }) =>
           >
             Find Recipes
           </button>
+          
+          <button
+            className={`nav-link ${activeView === 'favorites' ? 'active' : ''}`}
+            onClick={() => setActiveView('favorites')}
+          >
+            Favorites
+          </button>
+
         </div>
       </div>
     </motion.nav>

@@ -5,9 +5,12 @@ import './RecipeCards.css';
 
 interface RecipeCardsProps {
   recipes: Recipe[];
+  favorites: Recipe[];
+  onToggleFavorite: (recipe: Recipe) => void;
+  onSelectRecipe: (recipe: Recipe) => void;
 }
 
-const RecipeCards: React.FC<RecipeCardsProps> = ({ recipes }) => {
+const RecipeCards: React.FC<RecipeCardsProps> = ({ recipes, favorites, onToggleFavorite, onSelectRecipe}) => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   const container = {
@@ -120,9 +123,16 @@ const RecipeCards: React.FC<RecipeCardsProps> = ({ recipes }) => {
                 >
                   View Full Recipe
                 </button>
-                <button className="recipe-btn btn-save">
-                  <span>❤️</span>
+
+                <button
+                  className="recipe-btn btn-save"
+                  onClick={() => onToggleFavorite(recipe)}
+                >
+                  <span style={{ fontSize: "1.3rem" }}>
+                    {favorites.some((fav) => fav.id === recipe.id) ? "❤️" : "🤍"}
+                  </span>
                 </button>
+
               </div>
             </motion.div>
           ))}
