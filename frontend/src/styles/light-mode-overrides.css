@@ -1,0 +1,67 @@
+/* Overrides to improve readability in light mode (home page) */
+
+/* Hero */
+.app-light .hero .title-white {
+  color: var(--text-dark) !important;
+  text-shadow: none !important;
+}
+
+.app-light .hero .title-sub,
+.app-light .hero-description,
+.app-light .hero .stat-label,
+.app-light .hero .stat-number {
+  color: rgba(15, 23, 42, 0.9) !important;
+}
+
+.app-light .sparkle,
+.app-light .sparkles {
+  color: rgba(15, 23, 42, 0.5) !important;
+  text-shadow: none !important;
+}
+
+/* Buttons in hero */
+.app-light .btn-secondary {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border-color: rgba(15, 23, 42, 0.06) !important;
+  color: var(--text-dark) !important;
+}
+
+/* Recipe section */
+.app-light .results-title,
+.app-light .results-count {
+  color: rgba(15, 23, 42, 0.95) !important;
+  text-shadow: none !important;
+}
+
+/* Recipe card light tweaks */
+.app-light .recipe-card .recipe-time,
+.app-light .recipe-card .recipe-emoji {
+  color: rgba(15,23,42,0.85) !important;
+}
+
+.app-light .recipe-card .recipe-image {
+  background: rgba(15,23,42,0.04) !important;
+}
+
+/* Floating card adjustments */
+.app-light .floating-card {
+  background: white !important;
+  border-color: var(--border) !important;
+  color: var(--text-dark) !important;
+}
+
+/* General white-text fallbacks on homepage */
+.app-light .white,
+.app-light .text-white,
+.app-light .title-white,
+.app-light h1, .app-light h2, .app-light h3,
+.app-light p,
+.app-light span,
+.app-light a {
+  color: var(--text-dark) !important;
+}
+
+/* Reduce bright glass shimmer for legibility */
+.app-light .glass {
+  background: rgba(255,255,255,0.95) !important;
+}

@@ -160,3 +160,35 @@
   color: #f9fafb;
   box-shadow: 0 8px 20px rgba(22, 163, 74, 0.5);
 }
+
+/* === LOGO: Improve visibility in light mode === */
+.app-light .logo-text {
+  /* use darker gradient/text for visibility on light backgrounds */
+  background: linear-gradient(135deg, #0f172a 0%, #374151 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-light .logo-icon {
+  /* add subtle contrast behind emoji/icon for legibility */
+  background: rgba(0, 0, 0, 0.06);
+  padding: 6px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* Keep logo bright and visible in dark mode (reverse treatment) */
+.app-dark .logo-text {
+  background: linear-gradient(135deg, #ffffff 0%, #fcd34d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-dark .logo-icon {
+  background: rgba(255, 255, 255, 0.03);
+}

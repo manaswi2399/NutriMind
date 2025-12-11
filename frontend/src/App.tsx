@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './App.css';
+import './styles/light-mode-overrides.css';
 import Hero from './components/Hero';
 import DietForm from './components/DietForm';
 import IngredientForm from './components/IngredientForm';
@@ -143,22 +144,6 @@ function App() {
     }
   };
 
-  const handleIngredientSubmit = async (ingredientData: any) => {
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost:8000/api/recipes/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ingredientData),
-      });
-      const data = await response.json();
-      setIngredientRecipes(data.recipes || []); // Store in ingredient-specific state
-    } catch (error) {
-      console.error('Error fetching recipes:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className={`app app-${mode}`}>
