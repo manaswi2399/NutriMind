@@ -3,7 +3,7 @@
   position: relative;
   z-index: 2;
 }
-
+  background: rgba(0, 0, 0, 0.1);
 .results-header {
   text-align: center;
   margin-bottom: 60px;
@@ -501,4 +501,30 @@
     height: 36px;
     font-size: 20px;
   }
+}
+
+/* === Dark mode overrides for recipe cards === */
+.app-dark .recipe-cards-section {
+  background: transparent;
+}
+
+.app-dark .recipe-card {
+  background: rgba(2,6,23,0.36);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.app-dark .recipe-card .recipe-name {
+  color: #f8fafc; /* bright text for dark backgrounds */
+}
+
+.app-dark .recipe-card .recipe-description,
+.app-dark .ingredients-list li,
+.app-dark .results-title,
+.app-dark .results-count {
+  color: rgba(229,231,235,0.9);
+}
+
+.app-dark .recipe-card .recipe-time {
+  background: rgba(255,255,255,0.06);
+  color: #f8fafc;
 }
