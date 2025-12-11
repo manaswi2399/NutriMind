@@ -1,0 +1,42 @@
+/* Favorites page spacing to avoid overlap with fixed navigation */
+.favorites-page {
+  padding: calc(var(--nav-height, 80px) + 24px) 6% 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.favorites-page h2 {
+  font-size: 28px;
+  margin-bottom: 32px;
+  color: var(--text-dark);
+  text-align: left;
+}
+
+.favorites-page p {
+  color: var(--text-light);
+  font-size: 16px;
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(245,158,11,0.05);
+  border-radius: 12px;
+}
+
+/* Dark mode adjustments for favorites */
+.app-dark .favorites-page h2 {
+  color: #f8fafc;
+}
+
+.app-dark .favorites-page p {
+  color: #cbd5e1;
+  background: rgba(255,255,255,0.04);
+}
+
+@media (max-width: 768px) {
+  .favorites-page {
+    padding: calc(var(--nav-height, 68px) + 16px) 5% 32px;
+  }
+
+  .favorites-page h2 {
+    font-size: 22px;
+  }
+}

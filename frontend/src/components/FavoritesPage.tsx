@@ -1,4 +1,5 @@
 import React from "react";
+import './FavoritesPage.css';
 import RecipeCards from "./RecipeCards";
 import { Recipe } from "../App";
 

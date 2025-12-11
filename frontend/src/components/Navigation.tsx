@@ -11,6 +11,7 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView }) => {
   const { mode, toggleMode } = useThemeMode();
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,12 +29,20 @@ const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView }) =>
       transition={{ duration: 0.5 }}
     >
       <div className="nav-container">
-        <div className="nav-logo" onClick={() => setActiveView('home')}>
+        <div className="nav-logo" onClick={() => { setActiveView('home'); setMenuOpen(false); }}>
           <span className="logo-icon">🥗</span>
           <span className="logo-text">NutriMind</span>
         </div>
 
-        <div className="nav-links">
+        <button
+          className={`nav-toggle ${menuOpen ? 'open' : ''}`}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          <span className="toggle-icon">{menuOpen ? '✕' : '☰'}</span>
+        </button>
+
+        <div className={`nav-links ${menuOpen ? 'mobile-open' : ''}`} onClick={() => setMenuOpen(false)}>
           <button
             className={`nav-link ${activeView === "home" ? "active" : ""}`}
             onClick={() => setActiveView("home")}
@@ -62,7 +71,6 @@ const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView }) =>
             Favorites
           </button>
 
-          {/* 🔽 new dark-mode toggle button */}
           <button
             className="nav-link"
             onClick={toggleMode}

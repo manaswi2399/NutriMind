@@ -398,6 +398,46 @@
     justify-content: center;
   }
 
+
+/* Smaller screens: hide decorative visuals and simplify hero layout */
+@media (max-width: 600px) {
+  .hero {
+    padding: 60px 5% 40px 5%;
+    min-height: auto;
+    margin-top: 20px;
+  }
+
+  .title-main {
+    font-size: 42px;
+  }
+
+  .title-sub {
+    font-size: 14px;
+  }
+
+  .hero-visual,
+  .floating-card,
+  .hero-bg-decoration,
+  .hero-bg-pattern,
+  .sparkles {
+    display: none !important;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+}
+
+/* Tablet (601px) and larger: show hero visuals */
+@media (min-width: 601px) {
+  .hero-visual,
+  .floating-card,
+  .hero-bg-decoration,
+  .hero-bg-pattern,
+  .sparkles {
+    display: block !important;
+  }
+}
   .btn-primary-enhanced {
     padding: 18px 38px;
     font-size: 17px;

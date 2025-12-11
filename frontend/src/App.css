@@ -30,8 +30,14 @@ body {
 }
 
 .app {
+  --nav-height: 80px; /* default nav height; overridden by nav if needed */
   min-height: 100vh;
   position: relative;
+  padding-top: var(--nav-height);
+}
+
+@media (max-width: 768px) {
+  .app { --nav-height: 68px; }
 }
 
 /* Custom Scrollbar */

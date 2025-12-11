@@ -63,6 +63,16 @@
   gap: 8px;
 }
 
+.nav-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: inherit;
+  padding: 8px;
+}
+
 .nav-link {
   padding: 12px 24px;
   background: transparent;
@@ -120,12 +130,46 @@
 
   .nav-links {
     gap: 4px;
+    display: none;
+    position: absolute;
+    top: 68px;
+    right: 5%;
+    flex-direction: column;
+    background: rgba(255,255,255,0.98);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+    padding: 12px;
+    width: calc(100% - 10%);
+    max-width: 320px;
   }
+
+  .nav-toggle { display: inline-flex; }
+
+  .nav-links.mobile-open { display: flex; }
 
   .nav-link {
     padding: 10px 16px;
     font-size: 14px;
   }
+}
+
+/* === Dark mode mobile menu text clarity === */
+.app-dark .nav-links {
+  background: rgba(15,23,42,0.96);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.app-dark .nav-links .nav-link {
+  color: #e5e7eb !important;
+}
+
+.app-dark .nav-links .nav-link:hover {
+  background-color: rgba(148,163,184,0.15);
+  color: #ffffff !important;
+}
+
+.app-dark .nav-toggle {
+  color: #e5e7eb;
 }
 
 /* === NAV LINKS: LIGHT THEME === */
