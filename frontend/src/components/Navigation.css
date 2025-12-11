@@ -192,3 +192,33 @@
 .app-dark .logo-icon {
   background: rgba(255, 255, 255, 0.03);
 }
+
+/* === SCROLLED NAV: Dark mode adjustments === */
+/* When the page is scrolled and the nav gains the 'scrolled' class,
+   keep the nav background and text suitable for dark theme. */
+.app-dark .navigation.scrolled {
+  background: rgba(2, 6, 23, 0.85); /* deep translucent navy */
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+}
+
+.app-dark .navigation.scrolled .nav-link {
+  color: #e5e7eb; /* light text for dark background */
+}
+
+.app-dark .navigation.scrolled .nav-link:hover {
+  background-color: rgba(148, 163, 184, 0.06);
+  color: #ffffff;
+}
+
+.app-dark .navigation.scrolled .logo-text {
+  background: linear-gradient(135deg, #ffffff 0%, #fcd34d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-dark .navigation.scrolled .logo-icon {
+  background: rgba(255, 255, 255, 0.04);
+}
