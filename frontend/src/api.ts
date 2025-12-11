@@ -5,7 +5,7 @@
 
 import axios, { AxiosInstance } from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://nutrimind-i2w3.onrender.com/';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({

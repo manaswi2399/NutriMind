@@ -104,7 +104,7 @@ function App() {
 
       console.log("Sending payload:", payload);
 
-      const response = await fetch("http://localhost:8000/api/meal-plan", {
+      const response = await fetch("https://nutrimind-i2w3.onrender.com/api/meal-plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

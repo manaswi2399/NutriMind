@@ -73,7 +73,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({
 
       console.log("Sending recipe search payload:", payload);
 
-      const response = await fetch("http://localhost:8000/api/recipes/search", {
+      const response = await fetch("https://nutrimind-i2w3.onrender.com/api/recipes/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
