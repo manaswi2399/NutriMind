@@ -7,6 +7,7 @@ import IngredientForm from './components/IngredientForm';
 import RecipeCards from './components/RecipeCards';
 import Navigation from './components/Navigation';
 import FavoritesPage from './components/FavoritesPage';
+import { useThemeMode } from "./context/ThemeContext";
 
 export interface Recipe {
   id: string;
@@ -24,6 +25,7 @@ export interface Recipe {
 }
 
 function App() {
+  const { mode } = useThemeMode();
   const [activeView, setActiveView] = useState<'home' | 'diet' | 'ingredients' | 'favorites'>('home');
   
   // Separate recipe states for each page (from your App.tsx)
@@ -159,8 +161,8 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <Navigation activeView={activeView} setActiveView={setActiveView} />
+    <div className={`app app-${mode}`}>
+    <Navigation activeView={activeView} setActiveView={setActiveView} />
       
       <AnimatePresence mode="wait">
         {activeView === 'home' && (

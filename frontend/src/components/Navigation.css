@@ -127,3 +127,36 @@
     font-size: 14px;
   }
 }
+
+/* === NAV LINKS: LIGHT THEME === */
+.app-light .nav-link {
+  color: #4b5563;               /* gray-700, clearly visible */
+}
+
+.app-light .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111827;               /* almost black */
+}
+
+.app-light .nav-link.active {
+  background-color: #fed7aa;    /* soft orange pill (matches your brand) */
+  color: #111827;
+  box-shadow: 0 8px 20px rgba(248, 180, 107, 0.4);
+}
+
+
+/* === NAV LINKS: DARK THEME === */
+.app-dark .nav-link {
+  color: #e5e7eb;               /* light gray */
+}
+
+.app-dark .nav-link:hover {
+  background-color: rgba(148, 163, 184, 0.2); /* slate-ish hover */
+  color: #f9fafb;
+}
+
+.app-dark .nav-link.active {
+  background-color: #16a34a;    /* emerald accent for active tab */
+  color: #f9fafb;
+  box-shadow: 0 8px 20px rgba(22, 163, 74, 0.5);
+}

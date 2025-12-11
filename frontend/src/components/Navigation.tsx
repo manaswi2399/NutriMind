@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import './Navigation.css';
+import { useThemeMode } from "../context/ThemeContext";
 
 interface NavigationProps {
   activeView: 'home' | 'diet' | 'ingredients'| 'favorites';
@@ -8,6 +9,7 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView }) => {
+  const { mode, toggleMode } = useThemeMode();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -33,32 +35,42 @@ const Navigation: React.FC<NavigationProps> = ({ activeView, setActiveView }) =>
 
         <div className="nav-links">
           <button
-            className={`nav-link ${activeView === 'home' ? 'active' : ''}`}
-            onClick={() => setActiveView('home')}
+            className={`nav-link ${activeView === "home" ? "active" : ""}`}
+            onClick={() => setActiveView("home")}
           >
             Home
           </button>
+
           <button
-            className={`nav-link ${activeView === 'diet' ? 'active' : ''}`}
-            onClick={() => setActiveView('diet')}
+            className={`nav-link ${activeView === "diet" ? "active" : ""}`}
+            onClick={() => setActiveView("diet")}
           >
             Meal Plan
           </button>
+
           <button
-            className={`nav-link ${activeView === 'ingredients' ? 'active' : ''}`}
-            onClick={() => setActiveView('ingredients')}
+            className={`nav-link ${activeView === "ingredients" ? "active" : ""}`}
+            onClick={() => setActiveView("ingredients")}
           >
             Find Recipes
           </button>
-          
+
           <button
-            className={`nav-link ${activeView === 'favorites' ? 'active' : ''}`}
-            onClick={() => setActiveView('favorites')}
+            className={`nav-link ${activeView === "favorites" ? "active" : ""}`}
+            onClick={() => setActiveView("favorites")}
           >
             Favorites
           </button>
 
+          {/* 🔽 new dark-mode toggle button */}
+          <button
+            className="nav-link"
+            onClick={toggleMode}
+          >
+            {mode === "dark" ? "Light Mode" : "Dark Mode"}
+          </button>
         </div>
+
       </div>
     </motion.nav>
   );

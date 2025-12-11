@@ -11,3 +11,92 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* base app container */
+.app {
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* light mode (default) */
+.app-light {
+  background-color: #f9fafb;   /* light gray */
+  color: #020617;              /* near-black */
+}
+
+/* dark mode */
+.app-dark {
+  background-color: #020617;   /* very dark blue/gray */
+  color: #e5e7eb;              /* light gray text */
+}
+
+/* example tweaks for existing components */
+.app-dark .navigation {
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom-color: #1f2937;
+}
+
+.app-dark .nav-link {
+  color: #e5e7eb;
+}
+
+.app-dark .nav-link.active {
+  background-color: #16a34a;
+  color: #f9fafb;
+}
+
+.app-dark .card,
+.app-dark .recipe-card {
+  background-color: #0f172a;
+  border-color: #1f2937;
+}
+
+/* ===== LIGHT THEME ===== */
+
+.app-light .title-accent {
+  /* "Nutri" */
+  background: linear-gradient(90deg, #f97316, #facc15);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.app-light .title-white {
+  /* "Mind" – make it dark in light mode */
+  color: #111827; /* very dark gray */
+}
+
+.app-light .title-sub {
+  color: #4b5563; /* gray-700 */
+  letter-spacing: 0.25em;
+}
+
+.app-light .hero-description {
+  color: #4b5563;       /* readable body text */
+  max-width: 36rem;
+}
+
+
+/* ===== DARK THEME ===== */
+
+.app-dark .title-accent {
+  /* a bit brighter for dark bg */
+  background: linear-gradient(90deg, #fdba74, #facc15);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.app-dark .title-white {
+  /* keep "Mind" actually white in dark mode */
+  color: #f9fafb; /* near-white */
+}
+
+.app-dark .title-sub {
+  color: #e5e7eb;
+  letter-spacing: 0.25em;
+}
+
+.app-dark .hero-description {
+  color: #e5e7eb;
+  max-width: 36rem;
+}
+
