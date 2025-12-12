@@ -186,9 +186,8 @@ Find recipes based on ingredients
 
 
 ## Performance Metrics
-
-screenshots/pref_lh
-screenshots/WCAG.png
+![LightHouse Performance](./screenshots/pref_lh.png)
+![WCAG AA](./screenshots/WCAG.png)
 
 ## Deployment
 
@@ -197,10 +196,10 @@ screenshots/WCAG.png
 # URL: https://nutrimindweb.netlify.app/
 
 ![Home Page](./screenshots/home_page.png)
-screenshots/meal-plan.png
-screenshots/find_recipe.png
-screenshots/recipe_card.png
-screenshots/favorite.png
+![Meal Plan](./screenshots/meal-plan.png)
+![Find Recipe](./screenshots/find_recipe.png)
+![Recipe Card](./screenshots/recipe_card.png)
+![Favorites Page](./screenshots/favorite.png)
 
 ## AI Tools used
 
