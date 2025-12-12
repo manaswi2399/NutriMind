@@ -187,7 +187,7 @@ Find recipes based on ingredients
 
 ## Performance Metrics
 
-screenshots/pref_lh.png
+screenshots/pref_lh
 screenshots/WCAG.png
 
 ## Deployment
