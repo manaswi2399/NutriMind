@@ -196,7 +196,7 @@ screenshots/WCAG.png
 # Backend deployed on Render
 # URL: https://nutrimindweb.netlify.app/
 
-screenshots/home_page.png
+![Home Page](./screenshots/home_page.png)
 screenshots/meal-plan.png
 screenshots/find_recipe.png
 screenshots/recipe_card.png
