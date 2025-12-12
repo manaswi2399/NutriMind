@@ -186,7 +186,7 @@ Find recipes based on ingredients
 
 
 ## Performance Metrics
-![LightHouse Performance](./screenshots/pref_lh.png)
+![LightHouse Performance](./screenshots/perf_lh.png)
 ![WCAG AA](./screenshots/WCAG.png)
 
 ## Deployment
