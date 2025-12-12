@@ -3,28 +3,27 @@
 ![NutriMind Banner](https://img.shields.io/badge/NutriMind-AI%20Nutrition-orange?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.124-009688?style=for-the-badge&logo=fastapi)
-![Claude AI](https://img.shields.io/badge/Claude-AI-7C3AED?style=for-the-badge)
+![Fetch AI](https://img.shields.io/badge/Claude-AI-7C3AED?style=for-the-badge)
 
-NutriMind is an intelligent web application that revolutionizes meal planning and recipe discovery using advanced AI. Built with React, FastAPI, and Claude AI, it provides personalized nutrition guidance and creative recipe suggestions.
+NutriMind is an intelligent web application that revolutionizes meal planning and recipe discovery using advanced AI. Built with React, FastAPI, and Fetch AI, it provides personalized nutrition guidance and creative recipe suggestions.
 
-## ✨ Features
+## Features
 
 ### Core Features
-- **🎯 AI Meal Planning**: Generate personalized meal plans based on dietary goals, calorie targets, and restrictions
-- **🔍 Smart Recipe Finder**: Discover creative recipes based on available ingredients
-- **📊 Nutritional Insights**: Detailed macronutrient breakdowns for every meal
-- **🎨 Stunning UI**: Beautiful, modern interface with smooth animations
-- **♿ Accessible Design**: WCAG 2.1 Level AA compliant
-- **📱 Responsive**: Optimized for desktop, tablet, and mobile devices
+- **AI Meal Planning**: Generate personalized meal plans based on dietary goals, calorie targets and restrictions
+- **Smart Recipe Finder**: Discover creative recipes based on available ingredients
+- **Nutritional Insights**: Detailed macronutrient breakdowns for every meal
+- **Accessible Design**: WCAG Level AA compliant
+- **Responsive**: Optimized for desktop, tablet, and mobile devices
 
 ### Technical Highlights
-- Real-time AI-powered suggestions using Claude Sonnet 4
+- Real-time AI-powered suggestions using Fetch AI ASI Mini
 - Type-safe React with TypeScript
 - RESTful API with FastAPI
 - Smooth animations with Framer Motion
 - Glassmorphism design with modern CSS
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 nutrimind/
@@ -51,17 +50,11 @@ nutrimind/
 └── backend/                 # FastAPI Backend
     ├── main.py             # FastAPI Application
     ├── requirements.txt    # Python Dependencies
-    ├── .env.example       # Environment Template
+    ├── .env               # Environment
     └── README.md          # Backend Documentation
 ```
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** (v18 or higher)
-- **Python** (v3.10 or higher)
-- **Anthropic API Key** (Get from [Anthropic Console](https://console.anthropic.com/))
+## Getting Started
 
 ### Backend Setup
 
@@ -86,14 +79,14 @@ nutrimind/
    cp .env.example .env
    ```
    
-   Edit `.env` and add your Anthropic API key:
+   Edit `.env` and add your Fetch API key:
    ```
-   ANTHROPIC_API_KEY=your_actual_api_key_here
+   FETCH_API_KEY=your_actual_api_key_here
    ```
 
 5. **Run the backend server**
    ```bash
-   python main.py
+   python -m uvicorn app.main:app --reload
    ```
    
    Backend will be available at: `http://localhost:8000`
@@ -191,85 +184,30 @@ Find recipes based on ingredients
 }
 ```
 
-## 🎨 Design Philosophy
 
-NutriMind features a unique design approach inspired by modern web aesthetics:
+## Performance Metrics
 
-- **Typography**: Playfair Display for headlines, Work Sans for body text
-- **Color Palette**: Vibrant gradients (purple to pink) with amber accents
-- **Glassmorphism**: Frosted glass effects for cards and containers
-- **Animations**: Smooth transitions using Framer Motion
-- **Accessibility**: Keyboard navigation, screen reader support, high contrast
+screenshots/pref_lh.png
+screenshots/WCAG.png
 
-## 🧪 Testing
+## Deployment
 
-### Frontend Testing
-```bash
-cd frontend
-npm test
-```
+# Frontend deployed on Netlify
+# Backend deployed on Render
+# URL: https://nutrimindweb.netlify.app/
 
-### Backend Testing
-```bash
-cd backend
-pytest
-```
+screenshots/home_page.png
+screenshots/meal-plan.png
+screenshots/find_recipe.png
+screenshots/recipe_card.png
+screenshots/favorite.png
 
-## 📊 Performance Metrics
+## AI Tools used
 
-### Target Metrics (from proposal)
-- ✅ **Accessibility**: WCAG 2.1 Level AA compliance
-- ✅ **Performance**: Lighthouse score ≥ 90 (desktop), ≥ 80 (mobile)
-- ✅ **Core Web Vitals**: LCP < 2.5s, CLS < 0.1
-- ✅ **AI Accuracy**: 85%+ match rate for dietary preferences
-- ✅ **Uptime**: 99%+ on Netlify deployment
+- Fetch AI: API Key
+- Claude: Code Generation
+- ChatGPT: Debugging 
 
-## 🚢 Deployment
-
-### Frontend (Netlify)
-1. Push code to GitHub
-2. Connect repository to Netlify
-3. Set build command: `npm run build`
-4. Set publish directory: `build/`
-5. Deploy!
-
-### Backend (Options)
-- **Railway**: Connect GitHub repo, auto-deploy
-- **Render**: Free tier available, easy setup
-- **AWS EC2**: More control, requires configuration
-- **Google Cloud Run**: Serverless, pay-per-use
-
-## 🔐 Security
-
-- API keys stored in environment variables
-- CORS configured for specific origins
-- Input validation using Pydantic
-- No sensitive data stored in localStorage
-- Rate limiting (recommended for production)
-
-## 🤝 Contributing
-
-This is a student project for CMPE 280 at SJSU. Team members:
-- Shravani Surendra Chandratre
-- Manaswi Rajesh Lukkad
-- Parth Prasanna Mhakavekar
-- Prem Jitendra Jadhav
-
-## 📝 License
-
-This project is created for educational purposes as part of CMPE 280 coursework.
-
-## 🙏 Acknowledgments
-
-- **Claude AI** by Anthropic for intelligent meal planning
-- **React** team for the amazing framework
-- **FastAPI** for the modern Python API framework
-- **Framer Motion** for smooth animations
-- **Material-UI** for UI components
-
-## 📞 Support
-
-For issues or questions about the project, please contact the team members via email listed in the project proposal.
 
 ---
 
